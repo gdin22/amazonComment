@@ -8,7 +8,7 @@ conn = MongoClient('localhost', 27017)
 asin = conn.amazon.asin
 
 asinList = [i[0] for i in asin.find_one()['asinToSku'].items()]
-asinList = ['B077DFT88N']
+#asinList = ['B077DFT88N']
 
 amazonUrl = 'https://www.amazon.com'
 """
@@ -40,8 +40,25 @@ class comSpider(scrapy.Spider):
         item['url'] = response.url
         item['stars'] = response.css('.a-link-normal .review-rating  .a-icon-alt::text').extract()
         item['comment'] = response.css('.review-text::text').extract()
-        item['size'] = response.css('.a-color-secondary.a-size-mini.a-link-normal::text').extract()[0::2]
-        item['color'] = response.css('.a-color-secondary.a-size-mini.a-link-normal::text').extract()[1::2]
+        sizeOrColor = response.css('.a-color-secondary.a-size-mini.a-link-normal::text').extract()
+        item['size'] = []
+        item['color'] = []
+
+        for eachSizeColor in sizeOrColor:
+            if 'color' in eachSizeColor.lower():
+                item['color'].append(eachSizeColor)
+            else:
+                item['size'].append(eachSizeColor)
+
+        commentLen = len(item['comment'])
+        colorLen = len(item['color'])
+        sizeLen = len(item['size'])
+
+        if commentLen > colorLen:
+            item['color'] += ([''] * (commentLen - colorLen))
+
+        if commentLen > sizeLen:
+            item['size'] += ([''] * (commentLen - sizeLen))
 
         yield item
         next_href = response.css('.a-last a').xpath('@href').extract()

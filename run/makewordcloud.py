@@ -23,8 +23,7 @@ class makeWordCloud(object):
         self.collocations = 1,
         self.random_state = 1
 
-
-    def getAsin(self, asin):
+    def getAsin(self, asin):  # 获得一个asin的所有颜色列表 尺寸列表 星级列表
         eachAsinComments = self.comment.find({'asin': asin})
         colorlist = [each['color'] for each in eachAsinComments]
         eachAsinComments = self.comment.find({'asin': asin})
@@ -37,11 +36,10 @@ class makeWordCloud(object):
         print(colors, sizes, stars)
         return colors, sizes, stars
 
-    def output(self):
+    def output(self):  # 测试用
         print(self.comment.find_one())
 
-    def randomGetText(self, asin):
-
+    def randomGetText(self, asin):  # 随机asin中的星级 颜色 和 尺寸
         colors, sizes, stars = self.getAsin(asin)
         color = random.choice(colors)
         size = random.choice(sizes)
@@ -60,7 +58,7 @@ class makeWordCloud(object):
         print(text)
         return text, searchState
 
-    def getcloud(self, asin):
+    def getcloud(self, asin):  # 运行的程序 用来绘制和保存图片 图片的名字为 子asin
         text, searchState = self.randomGetText(asin)
         wc = self.makecloud()
         wc.generate(text)
@@ -94,6 +92,6 @@ class makeWordCloud(object):
                        )
         return wc
 
-    def addStopWords(self, *args):
+    def addStopWords(self, *args):  # 添加屏蔽词
         for stopword in args:
             STOPWORDS.add(stopword)

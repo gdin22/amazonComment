@@ -8,7 +8,7 @@ conn = MongoClient('localhost', 27017)
 asin = conn.amazon.asin
 
 asinList = [i[0] for i in asin.find_one()['asinToSku'].items()]
-asinList = ['B077FFJRV6']
+# asinList = ['B07KC5BPRM']
 
 amazonUrl = 'https://www.amazon.com'
 """

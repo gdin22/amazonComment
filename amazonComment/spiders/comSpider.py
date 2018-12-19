@@ -8,7 +8,7 @@ conn = MongoClient('localhost', 27017)
 asin = conn.amazon.asin
 
 asinList = [i[0] for i in asin.find_one()['asinToSku'].items()]
-#asinList = ['B077DFT88N']
+asinList = ['B077FFJRV6']
 
 amazonUrl = 'https://www.amazon.com'
 """
@@ -39,7 +39,12 @@ class comSpider(scrapy.Spider):
         item = AmazoncommentItem()
         item['url'] = response.url
         item['stars'] = response.css('.a-link-normal .review-rating  .a-icon-alt::text').extract()
-        item['comment'] = response.css('.review-text::text').extract()
+        commentlist = response.css('.review-text')
+        commentLen = len(commentlist)
+        commentitem = []
+        for i in range(commentLen):
+            commentitem.append(''.join(commentlist[i].css('::text').extract()))
+        item['comment'] = commentitem
         sizeOrColor = response.css('.a-color-secondary.a-size-mini.a-link-normal::text').extract()
         item['size'] = []
         item['color'] = []
@@ -50,7 +55,7 @@ class comSpider(scrapy.Spider):
             else:
                 item['size'].append(eachSizeColor)
 
-        commentLen = len(item['comment'])
+
         colorLen = len(item['color'])
         sizeLen = len(item['size'])
 
